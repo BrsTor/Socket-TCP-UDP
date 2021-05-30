@@ -17,8 +17,7 @@ class UdpException(Exception):
 
 class TimeoutException(Exception):
 
-    def __init__(self, elapsed_time, message = "Se acabo el tiempo de espera: "):
-        self.elapsed_time = elapsed_time
+    def __init__(self, message = "Se acabo el tiempo de espera"):
         self.message = message
 
 class BadChecksumException(Exception):

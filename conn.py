@@ -54,13 +54,13 @@ def GetMsg(tcp_socket, udp_port):
 def GetMsgUdp(udp_socket):
     started_time = time.time()
     while True:
-        elapsed_time = time.time() - started_time
-        udp_socket.settimeout(10)
-        msg = udp_socket.recv(12000)
-        if(msg):
-            return msg
-        if(int(elapsed_time) >= 10):
-            raise TimeoutException(int(elapsed_time))
+        try:
+            udp_socket.settimeout(10)
+            msg = udp_socket.recv(12000)
+            if(msg):
+                return msg
+        except socket.timeout:
+            raise TimeoutException()
 
 if __name__ == "__main__":
 
@@ -91,7 +91,7 @@ if __name__ == "__main__":
             msg_md5 = hashlib.md5(msg_b64.encode())
             chkmsg_resp = CheckSum(tcp_socket, msg_md5).split()[0]
             if(chkmsg_resp == "ok"):
-                print("\nEl mensaje para " + username + " es: \n\n" + msg_b64)
+                print("\nEl mensaje para este usuario es: \n\n" + msg_b64)
                 bye_resp = ConfirmBye(tcp_socket).split()[0]
                 if(bye_resp == "ok"):
                     tcp_socket.close()
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     except UdpException as e:
         print(e.message + str(e.udp_port))
     except TimeoutException as e:
-        print(e.message + str(e.elapsed_time) + " seg")
+        print(e.message)
     except BadChecksumException as e:
         print(e.message)
     except SocketException as e:
